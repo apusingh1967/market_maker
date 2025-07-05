@@ -1,0 +1,11 @@
+plugins {
+  id 'application'
+}
+
+application {
+  mainClass = 'com.as.marketmaker.Main'
+}
+
+dependencies {
+  implementation project(':common')
+}

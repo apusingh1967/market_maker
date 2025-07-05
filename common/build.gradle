@@ -1,0 +1,15 @@
+plugins {
+  id 'java-library'
+}
+
+task generateMessages(type: JavaExec) {
+        main = 'uk.co.real_logic.sbe.SbeTool'
+        classpath = sourceSets.main.runtimeClasspath
+        systemProperties('sbe.output.dir': 'src/main/java',
+                'sbe.target.language': 'Java',
+                'sbe.validation.stop.on.error': 'true',
+                'sbe.validation.xsd': 'src/main/resources/com/codingmonster/common/sbe.xsd')
+        args = [
+                'src/main/resources/com/codingmonster/common/messages.xml'
+        ]
+    }
