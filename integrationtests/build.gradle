@@ -1,0 +1,32 @@
+plugins {
+  id 'java'
+}
+
+tasks.withType(Test).configureEach {
+  jvmArgs += [
+          "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+          "--add-opens=java.base/java.lang=ALL-UNNAMED"
+  ]
+}
+
+sourceSets {
+  main {
+    java {
+      srcDirs = []
+    }
+  } // No main sources
+  test {
+    java { srcDir 'src/test/java' }
+    resources { srcDir 'src/test/resources' }
+  }
+}
+
+dependencies {
+  implementation project(':clientgateway')
+  implementation project(':common')
+  implementation project(':executionalgos')
+  implementation project(':marketdata')
+  implementation project(':marketmaker')
+  implementation project(':matchingengine')
+  implementation project(':pricer')
+}

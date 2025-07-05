@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema
+	xmlns:sbe="http://fixprotocol.io/2016/sbe"
+	package="com.codingmonster.common.sbe" id="1" version="0"
+	semanticVersion="5.2"
+	description="A schema represents stock market data.">
+
+	<types>
+		<composite name="messageHeader"
+			description="Message identifiers and length of message root">
+			<type name="blockLength" primitiveType="uint16" />
+			<type name="templateId" primitiveType="uint16" />
+			<type name="schemaId" primitiveType="uint16" />
+			<type name="version" primitiveType="uint16" />
+		</composite>
+		<type name="Symbol" primitiveType="char" length="8" />
+		<composite name="Decimal">
+			<type name="mantissa" primitiveType="int64" />
+			<type name="exponent" primitiveType="int8" />
+		</composite>
+		<enum name="ExecType" encodingType="uint8">
+			<validValue name="New">0</validValue>
+			<validValue name="PartialFill">1</validValue>
+			<validValue name="Fill">2</validValue>
+			<validValue name="Canceled">3</validValue>
+			<validValue name="Rejected">4</validValue>
+		</enum>
+		<enum name="OrdStatus" encodingType="uint8">
+			<validValue name="New">0</validValue>
+			<validValue name="PartiallyFilled">1</validValue>
+			<validValue name="Filled">2</validValue>
+			<validValue name="Canceled">3</validValue>
+			<validValue name="Rejected">4</validValue>
+		</enum>
+		<enum name="Side" encodingType="uint8">
+			<validValue name="Buy">1</validValue>   <!-- FIX 1 -->
+			<validValue name="Sell">2</validValue>  <!-- FIX 2 -->
+		</enum>
+		<enum name="OrderType" encodingType="uint8">
+			<validValue name="Market">1</validValue>  <!-- FIX 1 -->
+			<validValue name="Limit">2</validValue>   <!-- FIX 2 -->
+		</enum>
+		<enum name="TimeInForce" encodingType="uint8">
+			<validValue name="Day">0</validValue>        <!-- FIX 0 -->
+			<validValue name="GTC">1</validValue>        <!-- FIX 1 -->
+			<validValue name="IOC">3</validValue>        <!-- FIX 3 -->
+			<validValue name="FOK">4</validValue>        <!-- FIX 4 -->
+		</enum>
+		<composite name="groupSizeEncoding"
+			description="Standard repeating group dimensions">
+			<type name="blockLength" primitiveType="uint16" />
+			<type name="numInGroup" primitiveType="uint16" />
+			<type name="numGroups" primitiveType="uint16"
+				presence="constant">1</type>
+		</composite>
+	</types>
+
+	<sbe:message name="ExecutionReport" id="200"
+		semanticType="8">
+		<field name="execId" id="1" type="uint64" />
+		<field name="orderId" id="2" type="uint64" />
+		<field name="clientId" id="3" type="uint64" />
+		<field name="execType" id="4" type="ExecType" />
+		<field name="ordStatus" id="5" type="OrdStatus" />
+		<field name="side" id="6" type="Side" />
+		<field name="price" id="7" type="Decimal" />
+		<field name="cumQty" id="8" type="uint32" />
+		<field name="leavesQty" id="9" type="uint32" />
+		<field name="lastQty" id="10" type="uint32" />
+		<field name="lastPrice" id="11" type="Decimal" />
+		<field name="timestamp" id="12" type="uint64" />
+		<field name="reasonCode" id="13" type="uint16" />
+	</sbe:message>
+
+	<sbe:message name="NewOrderMessage" id="100"
+		semanticType="D">
+		<field name="orderId" id="1" type="uint64" />
+		<field name="clientId" id="2" type="uint64" />
+		<field name="symbol" id="3" type="Symbol" />
+		<field name="side" id="4" type="Side" />        <!-- FIX 54 -->
+		<field name="orderType" id="5" type="OrderType" />   <!-- FIX 40 -->
+		<field name="quantity" id="6" type="uint32" />      <!-- FIX 38 -->
+		<field name="price" id="7" type="Decimal" />     <!-- FIX 44 -->
+		<field name="timeInForce" id="8" type="TimeInForce" /> <!-- FIX 59 -->
+		<field name="timestamp" id="9" type="uint64" />      <!-- FIX 60 -->
+	</sbe:message>
+
+	<sbe:message name="OrderCancelReplaceMessage" id="101"
+		semanticType="G">
+		<field name="origOrderId" id="1" type="uint64" />      <!-- Original order ID -->
+		<field name="orderId" id="2" type="uint64" />      <!-- New order ID -->
+		<field name="clientId" id="3" type="uint64" />      <!-- Client or trader ID -->
+		<field name="symbol" id="4" type="Symbol" />      <!-- Symbol, fixed length string -->
+		<field name="side" id="5" type="Side" />        <!-- Buy or Sell -->
+		<field name="orderType" id="6" type="OrderType" />   <!-- Limit, Market, etc. -->
+		<field name="quantity" id="7" type="uint32" />      <!-- New quantity -->
+		<field name="price" id="8" type="Decimal" />     <!-- New price if applicable -->
+		<field name="timeInForce" id="9" type="TimeInForce" /> <!-- GTC, IOC, etc. -->
+		<field name="timestamp" id="10" type="uint64" />     <!-- Message timestamp -->
+	</sbe:message>
+
+	<sbe:message name="OrderCancelMessage" id="102"
+		semanticType="F">
+		<field name="origOrderId" id="1" type="uint64" />   <!-- The order ID to cancel -->
+		<field name="orderId" id="2" type="uint64" />   <!-- New cancel request ID -->
+		<field name="clientId" id="3" type="uint64" />   <!-- Client or trader ID -->
+		<field name="symbol" id="4" type="Symbol" />   <!-- Security symbol -->
+		<field name="side" id="5" type="Side" />     <!-- Buy or Sell -->
+		<field name="timestamp" id="6" type="uint64" />   <!-- Time of cancel request -->
+	</sbe:message>
+
+	<!-- Market Data Snapshot message -->
+	<sbe:message name="MarketDataSnapshot" id="300"
+		semanticType="W">
+		<field name="MDReqID" id="1" type="uint64" />
+		<field name="symbol" id="2" type="Symbol" />
+		<field name="lastUpdateTime" id="3" type="uint64" />
+
+		<!-- Number of price levels (each level contains bid+offer) -->
+		<field name="noPriceLevels" id="4" type="uint8" />
+
+		<group name="PriceLevels" id="5"
+			dimensionType="groupSizeEncoding">
+			<field name="BidPrice" id="6" type="Decimal" />
+			<field name="BidSize" id="7" type="uint32" />
+			<field name="OfferPrice" id="8" type="Decimal" />
+			<field name="OfferSize" id="9" type="uint32" />
+			<field name="PriceLevelPosition" id="10" type="uint8" />
+		</group>
+	</sbe:message>
+
+</sbe:messageSchema>

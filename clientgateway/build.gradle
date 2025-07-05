@@ -1,0 +1,15 @@
+plugins {
+  id 'application'
+}
+
+application {
+  mainClass = 'com.codingmonster.clientgateway.Main'
+}
+
+dependencies {
+  implementation project(':common')
+  implementation 'org.quickfixj:quickfixj-core:2.3.2' // Or the latest version
+  implementation 'org.quickfixj:quickfixj-messages-fix44:2.1.1' // Or the latest version for your desired FIX version
+  // Add other QuickFIX/J artifacts as needed (e.g., quickfixj-all for convenience)
+   implementation 'org.quickfixj:quickfixj-all:2.3.2'
+}

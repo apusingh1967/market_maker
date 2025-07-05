@@ -1,0 +1,11 @@
+plugins {
+  id 'application'
+}
+
+application {
+  mainClass = 'com.codingmonster.marketdata.Main'
+}
+
+dependencies {
+  implementation project(':common')
+}

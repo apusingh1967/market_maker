@@ -1,0 +1,11 @@
+plugins {
+  id 'application'
+}
+
+application {
+  mainClass = 'com.codingmonster.matchingengine.Main'
+}
+
+dependencies {
+  implementation project(':common')
+}

@@ -1,0 +1,89 @@
+plugins {
+  id "com.diffplug.spotless" version "6.25.0"  // Check latest version: https://plugins.gradle.org/plugin/com.diffplug.spotless
+}
+
+allprojects {
+  group = 'com.as'
+  version = '1.0.0'
+
+  repositories {
+    mavenCentral()
+  }
+}
+
+subprojects {
+  apply plugin: 'java'
+  java {
+    toolchain {
+      languageVersion = JavaLanguageVersion.of(21)
+    }
+  }
+  tasks.named('test') {
+    useJUnitPlatform()
+  }
+
+  plugins.withId('application') {
+    applicationDefaultJvmArgs = [
+      "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+      "-Daeron.dir=/tmp/aeron"
+    ]
+  }
+
+  dependencies {
+    // Aeron (high-performance messaging)
+    implementation 'io.aeron:aeron-all:1.44.0'
+
+     // SBE runtime (required for encoding/decoding)
+    implementation 'uk.co.real-logic:sbe-all:1.27.0'
+
+    // For SBE code generation (build-time)
+    implementation 'uk.co.real-logic:sbe-tool:1.27.0'
+
+    implementation 'org.agrona:agrona:1.18.0'
+
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'org.slf4j:slf4j-simple:2.0.9'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+  }
+}
+
+spotless {
+
+    java {
+        googleJavaFormat() // or eclipse(), prettier(), etc.
+        target '**/*.java'
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    format 'xml', {
+        target '**/*.xml'
+                        eclipseWtp('xml').configFile('xml-formatter.xml')
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    format 'yaml', {
+        target '**/*.yaml', '**/*.yml'
+        prettier().config([
+            'parser': 'yaml',
+            'tabWidth': 2
+        ])
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    format 'properties', {
+        target '**/*.properties'
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    format 'groovyGradle', {
+        target '*.gradle', 'gradle/**/*.gradle'
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}

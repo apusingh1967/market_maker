@@ -1,0 +1,37 @@
+aeron:
+  clientgateway:
+    instances:
+      - pub_channel: "aeron:ipc"
+        pub_streamId: 10
+        cfg_file: "client-1.cfg"
+  executionalgos:
+    instances:
+      - sub_channel: "aeron:ipc"
+        sub_streamId: 10
+        pub_channel: "aeron:ipc"
+        pub_streamId: 30
+  marketdata:
+    instances:
+      - sub_channel: "aeron:udp?endpoint=224.0.1.1:5000"
+        sub_streamId: 20
+        pub_channel: "aeron:ipc"
+        pub_streamId: 21
+  pricer:
+    instances:
+      - sub_channel: "aeron:ipc"
+        sub_streamId: 21
+        pub_channel: "aeron:ipc"
+        pub_streamId: 22
+  marketmaker:
+    instances:
+      - sub_channel: "aeron:ipc"
+        sub_streamId: 22
+        pub_channel: "aeron:ipc"
+        pub_streamId: 30
+        id_file_path: "id-1"
+  matchingengine:
+    instances:
+      - sub_channel: "aeron:ipc"
+        sub_streamId: 30
+        pub_channel: "aeron:ipc"
+        pub_streamId: 31
